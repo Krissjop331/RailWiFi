@@ -1,0 +1,48 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Node
+node_modules/
+npm-packages-offline-cache/
+
+# Build outputs
+dist/
+build/
+coverage/
+.cache/
+.out/
+.next/
+.vercel/
+.turbo/
+.storybook-out/
+
+# Prisma
+prisma/*.db
+prisma/*.sqlite
+generated/
+generated/prisma/
+
+# Env & local
+.env
+.env.*
+!.env.example
+!.env.local.example
+
+# Misc
+*.pid
+*.seed
+*.pid.lock
+temp/
+.tmp/

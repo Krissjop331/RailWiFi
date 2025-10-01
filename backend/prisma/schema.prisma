@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tariff {
+  id           String   @id @default(cuid())
+  title        String
+  durationMin  Int
+  priceKzt     Decimal  @db.Decimal(12,2)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  payments     Payment[]
+}
+
+model Device {
+  id           String   @id @default(cuid())
+  mac          String   @unique
+  firstSeenAt  DateTime?
+  lastSeenAt   DateTime?
+  payments     Payment[]
+  tickets      AccessTicket[]
+  sessions     Session[]
+}
+
+enum PaymentStatus {
+  created
+  pending
+  paid
+  failed
+  expired
+  refunded
+}
+
+model Payment {
+  id              String   @id @default(cuid())
+  provider        String
+  providerOrderId String?  @unique
+  deviceId        String
+  device          Device   @relation(fields: [deviceId], references: [id])
+  tariffId        String
+  tariff          Tariff   @relation(fields: [tariffId], references: [id])
+  amountKzt       Decimal  @db.Decimal(12,2)
+  status          PaymentStatus
+  createdAt       DateTime @default(now())
+  paidAt          DateTime?
+  paidUntil       DateTime?
+
+  @@index([status, createdAt])
+}
+
+model AccessTicket {
+  id        String   @id @default(cuid())
+  deviceId  String
+  device    Device   @relation(fields: [deviceId], references: [id])
+  source    String
+  grantedAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([deviceId, expiresAt])
+}
+
+model Session {
+  id              String   @id @default(cuid())
+  deviceId        String
+  device          Device   @relation(fields: [deviceId], references: [id])
+  ssid            String?
+  apMac           String?
+  radiusSessionId String?
+  startedAt       DateTime @default(now())
+  endedAt         DateTime?
+  bytesIn         BigInt   @default(0)
+  bytesOut        BigInt   @default(0)
+
+  @@index([deviceId, startedAt])
+}
